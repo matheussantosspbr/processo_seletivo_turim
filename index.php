@@ -24,7 +24,7 @@
         <ul class="contreinnerPessoas"></ul>
       </div>
       <div class="textarea">
-        <form action="teste.php" method="post">
+        <form action="chamadas.php" method="post">
           <textarea id="campoJSON" cols="30" rows="25" name="json"></textarea>
           <div class="buts">
             <button class="but gravar" name="gravar">Gravar</button>
