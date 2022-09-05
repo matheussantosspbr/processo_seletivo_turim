@@ -16,14 +16,20 @@ let jsonPessoas = {
 if (window.location['search']) {
   //pega o que tem na URL removendo os caracteres ?json=
   let jsonUrl = window.location['search'].slice(6)
+
   // Tira todos os % e colocar aspas duplas
   jsonUrl = jsonUrl.replace(/%/gi, '"')
-  // //Tira todos os 2
+
+  // Tira todos os 2
   jsonUrl = jsonUrl.replace(/2/gi, '')
+  console.log(jsonUrl)
+
   // Transformo o JSON String em Obgj
   jsonFormatado = JSON.parse(jsonUrl)
+
   //Transforma o JSON OBJ em String Formatada
   campoJSON.innerHTML = JSON.stringify(jsonFormatado, '', 4)
+
   for (let i = 0; i < jsonFormatado['pessoas'].length; i++) {
     adicionarPessoas(jsonFormatado['pessoas'][i].nome)
     for (let j = 0; j < jsonFormatado['pessoas'][i]['filhos'].length; j++) {

@@ -2,9 +2,6 @@
 
 include("class/consultas.php");
 
-
-
-
 if (isset($_POST['gravar'])) {
   $db = new bd();
   $jsonStr = $_POST['json'];

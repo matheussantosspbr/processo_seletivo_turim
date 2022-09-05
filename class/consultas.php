@@ -30,7 +30,7 @@ class bd
       $this->limparDb();
       // Criar Tabelas
       $this->criarDb();
-
+      //
       for ($i = 0; $i < count($json['pessoas']); $i++) {
         for ($j = 0; $j < count($json['pessoas'][$i]['filhos']); $j++) {
           $sqlFilhos = $conexao->prepare(
