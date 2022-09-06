@@ -13,8 +13,6 @@ if (isset($_POST['gravar'])) {
 if (isset($_POST['ler'])) {
   $db = new bd();
   $json = $db->ler();
-
   $json = json_encode($json, JSON_UNESCAPED_UNICODE);
-
   header("Location: index.php?json=$json");
 }

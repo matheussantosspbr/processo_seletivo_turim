@@ -2,18 +2,16 @@
 
 class bd
 {
-  // Função da conexão
   public function conexao()
   {
-    // Conexão heroku PostgreSQL
-    // Você pode acessar o banco de dados com o DBeaver
-    $endereco = 'ec2-44-205-64-253.compute-1.amazonaws.com';
-    $dbName = 'dc3s8c8ml7a0hv';
-    $dbUser = 'mnskoqzkwumazb';
-    $senha = 'cd2b41c3098727d4fc580023b34800ffbbf85e99246edf1393c361d32e205386';
+    // conexão Phpmyadmin -> MySQL
+    $endereco = 'localhost';
+    $dbName = 'turim';
+    $dbUser = 'root';
+    $senha = '';
     try {
       // Conexão PDO
-      $con = new PDO("pgsql:host=$endereco;port=5432;dbname=$dbName", $dbUser, $senha, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+      $con = new PDO("mysql:host=$endereco;dbname=$dbName", $dbUser, $senha, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
       // echo "conectado";
     } catch (PDOException $e) {
       return $e->getMessage();
@@ -25,33 +23,40 @@ class bd
   {
 
     if (!($json['pessoas'] == array())) {
+      // estanciar a conexão
       $conexao = $this->conexao();
+
       //Limpar Banco de Dados
       $this->limparDb();
+
       // Criar Tabelas
       $this->criarDb();
-      //
+
+      //Processo de Cadastro das pessoas
       for ($i = 0; $i < count($json['pessoas']); $i++) {
         for ($j = 0; $j < count($json['pessoas'][$i]['filhos']); $j++) {
-          $sqlFilhos = $conexao->prepare(
-            'INSERT INTO
-                filhos(pessoas_id, nome)
-              VALUES
-                (?,?)'
-          );
+
+          // cadastrar filhos
+          $query = "INSERT INTO
+                       `filhos` (`pessoas_id`, `nome`)
+                     VALUES
+                        (:id_pess, :nomeFil)";
+
+          $sqlFilhos = $conexao->prepare($query);
           $id = $i + 1;
-          $sqlFilhos->bindParam(1, $id);
-          $sqlFilhos->bindParam(2, $json['pessoas'][$i]['filhos'][$j]);
+          $sqlFilhos->bindParam(":id_pess", $id);
+          $sqlFilhos->bindParam(":nomeFil", $json['pessoas'][$i]['filhos'][$j]);
           $sqlFilhos->execute();
           $sqlFilhos->fetchAll(PDO::FETCH_ASSOC);
         }
-        $sqlPais = $conexao->prepare(
-          'INSERT INTO
-              pessoas(nome)
-            VALUES
-              (?)'
-        );
-        $sqlPais->bindParam(1, $json['pessoas'][$i]['pessoa']);
+
+        // Cadastrar Pais
+        $queryPes = "INSERT INTO
+                    `pessoas`(`nome`)
+                  VALUES
+                    (:nomePes)";
+        $sqlPais = $conexao->prepare($queryPes);
+        $sqlPais->bindParam(":nomePes", $json['pessoas'][$i]['pessoa']);
         $sqlPais->execute();
         $sqlPais->fetchAll(PDO::FETCH_ASSOC);
       }
@@ -112,14 +117,15 @@ class bd
   {
     $conexao = $this->conexao();
 
-    //Query para apagar a tabela Filhos
-    $sqlDropFil = $conexao->prepare('DROP TABLE filhos');
-    $sqlDropFil->execute();
-    $sqlDropFil->fetchAll(PDO::FETCH_ASSOC);
     //Query para apagar a tabela Pessoas
     $sqlDropPess = $conexao->prepare('DROP TABLE pessoas');
     $sqlDropPess->execute();
     $sqlDropPess->fetchAll(PDO::FETCH_ASSOC);
+
+    //Query para apagar a tabela Filhos
+    $sqlDropFil = $conexao->prepare('DROP TABLE filhos ');
+    $sqlDropFil->execute();
+    $sqlDropFil->fetchAll(PDO::FETCH_ASSOC);
   }
 
   public function criarDb()
@@ -128,10 +134,10 @@ class bd
 
     //Query para criar a tabela Filhos
     $sqlCriarDbFil = $conexao->prepare('
-    CREATE TABLE filhos(
-      id serial PRIMARY KEY,
-      pessoas_id INT,
-      nome VARCHAR(15)
+    create table filhos(
+      id serial primary key,
+      pessoas_id int,
+      nome varchar(15)
     );
     ');
     $sqlCriarDbFil->execute();
@@ -139,9 +145,9 @@ class bd
 
     //Query para criar a tabela Pessoas
     $sqlCriarDbPess = $conexao->prepare('
-    CREATE TABLE pessoas(
-      id serial PRIMARY KEY,
-      nome VARCHAR(15)
+    create table pessoas(
+      id serial primary key,
+      nome varchar(15)
     );
     ');
     $sqlCriarDbPess->execute();

@@ -1,3 +1,5 @@
+create database turim;
+
 create table filhos(
 	id serial primary key,
 	pessoas_id int,
